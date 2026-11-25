@@ -9,6 +9,40 @@ built from scratch.
 > emulation yet, so NovaCast **cannot run games or boot a real BIOS to its
 > menu**. See [docs/PROGRESS.md](docs/PROGRESS.md) for exactly what exists.
 
+## Download
+
+| Platform | Download | Status |
+|----------|----------|--------|
+| **Windows 10/11 (64-bit)** | [**Download NovaCast for Windows (.zip)**](https://github.com/102rupeshsharma/NovaCast/releases/latest/download/NovaCast-windows-x64.zip) · [SHA-256](https://github.com/102rupeshsharma/NovaCast/releases/latest/download/NovaCast-windows-x64.zip.sha256) | Pre-alpha, version 0.1.0 |
+| **Android** | Not available yet | Planned. No Android build exists yet |
+| **iOS** | Not available yet | Planned. No iOS build exists yet |
+
+All versions and release notes: [Releases](https://github.com/102rupeshsharma/NovaCast/releases)
+
+> **Read before downloading:** this is an early development build. It
+> **cannot play Dreamcast games yet**: it opens an empty window and can run a
+> boot ROM headless for testing. There is no video, audio, disc or controller
+> emulation yet.
+
+**Installing on Windows**
+
+1. Click the Windows link above. The `.zip` file downloads straight away.
+2. Right-click the zip, choose **Extract All**, and open the extracted
+   `NovaCast-0.1.0-windows-x64` folder.
+3. Double-click `novacast.exe`, or run it from a terminal (see [Running](#running)).
+   No installer and no extra DLLs are needed.
+
+Windows SmartScreen may warn about an unrecognised app, because the build
+is not code-signed. Choose **More info → Run anyway** only if you trust where
+you downloaded it from. To check that the file was not altered, compare its
+hash with the published SHA-256 value:
+
+```powershell
+Get-FileHash .\NovaCast-windows-x64.zip -Algorithm SHA256
+```
+
+NovaCast does not include, and will never include, a Dreamcast BIOS or any games.
+
 ## What is in the repository
 
 | Path | Contents |
@@ -114,4 +148,3 @@ timers), so it will not get far.
 NovaCast contains no Sega code, BIOS or game data, and none will be added.
 To run software you will need a Dreamcast BIOS and disc images that you dumped
 yourself from hardware you own.
-# NovaCast

@@ -1,0 +1,16 @@
+build/
+out/
+dist/
+.toolchain/
+.vs/
+.vscode/
+CMakeUserPresets.json
+
+# Dreamcast firmware and disc images are never committed.
+*.gdi
+*.cdi
+*.chd
+*.cue
+*.iso
+dc_boot.bin
+dc_flash.bin
