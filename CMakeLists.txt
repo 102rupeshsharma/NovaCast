@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.21)
 
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/VERSION NOVACAST_VERSION_STRING LIMIT_COUNT 1)
+
 project(NovaCast
-  VERSION 0.1.0
+  VERSION ${NOVACAST_VERSION_STRING}
   DESCRIPTION "An independent Sega Dreamcast emulator"
   LANGUAGES C CXX)
 
@@ -31,7 +33,10 @@ include(Dependencies)
 # Put every executable in one folder so tests can find the app.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-add_subdirectory(src)
+# Shared emulator engine (also built by the Android app).
+add_subdirectory(core)
+# Windows desktop application.
+add_subdirectory(desktop)
 
 if(NOVACAST_BUILD_TESTS)
   enable_testing()

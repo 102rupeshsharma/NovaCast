@@ -5,17 +5,17 @@ add_executable(novacast_tests
   common/test_error.cpp
   common/test_log.cpp
   common/test_fileio.cpp
-  core/test_modules.cpp
-  core/test_emulator.cpp
-  core/test_scheduler.cpp
+  system/test_modules.cpp
+  system/test_emulator.cpp
+  system/test_scheduler.cpp
   memory/test_bus.cpp
   cpu/sh4_harness.h
   cpu/test_sh4_integer.cpp
   cpu/test_sh4_control.cpp
   cpu/test_sh4_fpu.cpp
-  app/test_command_line.cpp
+  desktop/test_command_line.cpp
 )
-target_link_libraries(novacast_tests PRIVATE novacast_core novacast_cli GTest::gtest_main)
+target_link_libraries(novacast_tests PRIVATE novacast_system novacast_cli GTest::gtest_main)
 target_include_directories(novacast_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 novacast_configure_executable(novacast_tests)
 

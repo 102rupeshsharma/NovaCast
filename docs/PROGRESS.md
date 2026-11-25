@@ -12,25 +12,42 @@
 NovaCast still **cannot run Dreamcast games or boot a real BIOS to its menu**.
 See "Not implemented yet" below.
 
+## Multi-platform restructure: Windows + Android (2026-11-25)
+
+- The engine moved to `core/` (the former `src/core/` system module is now
+  `core/system/`), and the Windows app to `desktop/`. `core/CMakeLists.txt`
+  builds the engine on its own, with no SDL or GoogleTest. All 164 desktop
+  tests pass unchanged after the move.
+- New Android app in `mobile/` (Kotlin, Jetpack Compose, NDK r27c). It builds
+  the same `core/` through a thin JNI bridge. No emulation code is duplicated.
+- One version number for every platform: the `VERSION` file.
+- Release workflow `.github/workflows/release.yml`: on a `v*` tag it builds
+  `NovaCast-Windows.exe`/`.zip` and a signed `NovaCast-Android.apk` and
+  publishes them as a GitHub pre-release. It has not run yet.
+- Android was tested on the **Android Emulator only** (Android 15, x86_64),
+  not on a physical device. Results are in [testing.md](testing.md).
+- A shared-engine bug found through Android testing was fixed: a power-on
+  reset did not clear the CPU's instruction counter.
+
 ## Phase 1, Step 2 – scheduler, memory map, BIOS loading, SH-4 interpreter
 
 ### Implemented
 
 | Item | Where | Tests |
 |------|-------|-------|
-| Scheduler: fixed event table, deadline ordering, tie order, cancel/reschedule from callbacks, overflow-safe deadlines, lateness reporting | `src/core/scheduler.*` | `Scheduler.*` (9) |
-| Physical address map with 64 KB pages: boot ROM (read only), flash (read only), VRAM 64-bit path and 32-bit interleaved path with mirrors, RAM with 4 mirrors, device hook (`map_device`), unmapped accesses (read 0, logged once per page, counted) | `src/memory/bus.*` | `BusTest.*` (13) |
-| Boot ROM loading: exact size check (2 MB), blank image rejection, file errors; flash ROM loading (128 KB) | `src/core/emulator.cpp`, `src/memory/bus.cpp` | `Emulator.Bios*`, `Emulator.Flash*` |
-| Reset vector: CPU starts at 0xA0000000 (boot ROM) and executes it | `src/cpu/sh4.cpp` | `Emulator.BootsFromResetVector` (synthetic ROM) |
-| SH-4 decode table: 209 instruction patterns, 65,536-entry table, overlap check | `src/cpu/sh4_interp.cpp` | `Sh4Decoder.*` |
-| SH-4 integer, logic, shift, multiply/MAC (including S-bit saturation), division step (DIV0S/DIV0U/DIV1), data transfer in every addressing mode | `src/cpu/sh4_interp.cpp` | `Sh4Test.*` (division checked against host arithmetic using the manual's own routines) |
-| Branches with delay slots, slot-illegal detection, branch targets computed before the slot runs, PC-relative addressing in slots | `src/cpu/sh4.cpp`, `sh4_interp.cpp` | `Sh4Test.*Branch*`, `*Slot*` |
-| Exceptions: illegal / slot illegal, TRAPA, address errors (alignment, user-mode privileged area), FPU disable / slot FPU disable, SR.BL=1 → manual reset; SPC/SSR/SGR/EXPEVT/TRA/TEA | `src/cpu/sh4.cpp` | `Sh4Test.*` (11 exception tests) |
-| Interrupt acceptance (priority vs SR.IMASK, SR.BL), INTEVT, SLEEP and wake-up | `src/cpu/sh4.cpp` | `Sh4Test.Interrupt*`, `SleepWaitsForInterrupt` |
-| Register banks (SR.MD/RB), privileged-instruction checks | `src/cpu/sh4.cpp` | `Sh4Test.SrRbSwapsBanks` and others |
-| FPU: single and double precision, FPSCR.PR/SZ/FR/RM/DN, paired and XD moves, FIPR, FTRV, FSCA, FSRRA, FTRC saturation, SH-4 NaN value, host rounding set from FPSCR.RM while running | `src/cpu/sh4_interp.cpp` | `Sh4FpuTest.*` (21) |
-| P4 area: CCN registers, area-7 alias, store queues and PREF flush via QACR, operand cache RAM (CCR.ORA) | `src/cpu/sh4.cpp` | `Sh4Test.StoreQueue*`, `Ccn*`, `OperandCacheRam` |
-| Headless BIOS runner: `--bios`, `--flash`, `--run-cycles` | `src/app/main.cpp`, `command_line.*` | `CommandLine.Bios*`, manual run below |
+| Scheduler: fixed event table, deadline ordering, tie order, cancel/reschedule from callbacks, overflow-safe deadlines, lateness reporting | `core/system/scheduler.*` | `Scheduler.*` (9) |
+| Physical address map with 64 KB pages: boot ROM (read only), flash (read only), VRAM 64-bit path and 32-bit interleaved path with mirrors, RAM with 4 mirrors, device hook (`map_device`), unmapped accesses (read 0, logged once per page, counted) | `core/memory/bus.*` | `BusTest.*` (13) |
+| Boot ROM loading: exact size check (2 MB), blank image rejection, file errors; flash ROM loading (128 KB) | `core/system/emulator.cpp`, `core/memory/bus.cpp` | `Emulator.Bios*`, `Emulator.Flash*` |
+| Reset vector: CPU starts at 0xA0000000 (boot ROM) and executes it | `core/cpu/sh4.cpp` | `Emulator.BootsFromResetVector` (synthetic ROM) |
+| SH-4 decode table: 209 instruction patterns, 65,536-entry table, overlap check | `core/cpu/sh4_interp.cpp` | `Sh4Decoder.*` |
+| SH-4 integer, logic, shift, multiply/MAC (including S-bit saturation), division step (DIV0S/DIV0U/DIV1), data transfer in every addressing mode | `core/cpu/sh4_interp.cpp` | `Sh4Test.*` (division checked against host arithmetic using the manual's own routines) |
+| Branches with delay slots, slot-illegal detection, branch targets computed before the slot runs, PC-relative addressing in slots | `core/cpu/sh4.cpp`, `sh4_interp.cpp` | `Sh4Test.*Branch*`, `*Slot*` |
+| Exceptions: illegal / slot illegal, TRAPA, address errors (alignment, user-mode privileged area), FPU disable / slot FPU disable, SR.BL=1 → manual reset; SPC/SSR/SGR/EXPEVT/TRA/TEA | `core/cpu/sh4.cpp` | `Sh4Test.*` (11 exception tests) |
+| Interrupt acceptance (priority vs SR.IMASK, SR.BL), INTEVT, SLEEP and wake-up | `core/cpu/sh4.cpp` | `Sh4Test.Interrupt*`, `SleepWaitsForInterrupt` |
+| Register banks (SR.MD/RB), privileged-instruction checks | `core/cpu/sh4.cpp` | `Sh4Test.SrRbSwapsBanks` and others |
+| FPU: single and double precision, FPSCR.PR/SZ/FR/RM/DN, paired and XD moves, FIPR, FTRV, FSCA, FSRRA, FTRC saturation, SH-4 NaN value, host rounding set from FPSCR.RM while running | `core/cpu/sh4_interp.cpp` | `Sh4FpuTest.*` (21) |
+| P4 area: CCN registers, area-7 alias, store queues and PREF flush via QACR, operand cache RAM (CCR.ORA) | `core/cpu/sh4.cpp` | `Sh4Test.StoreQueue*`, `Ccn*`, `OperandCacheRam` |
+| Headless BIOS runner: `--bios`, `--flash`, `--run-cycles` | `desktop/src/main.cpp`, `command_line.*` | `CommandLine.Bios*`, manual run below |
 
 ### Not implemented yet
 
@@ -81,13 +98,13 @@ Two expectations were corrected during this step, and both are recorded here.
 | C++20 CMake project, Debug/Release presets, Visual Studio preset | `CMakeLists.txt`, `CMakePresets.json`, `cmake/` | configure and build |
 | SDL2 2.30.9 (static, fetched) or system SDL2 | `cmake/Dependencies.cmake` | `app.window_smoke` |
 | GoogleTest 1.15.2 (fetched) | `cmake/Dependencies.cmake` | the test suite itself |
-| Separate libraries: common, cpu, gpu, audio, memory, disc, controller, core, cli | `src/CMakeLists.txt` | build |
-| `Result<T>` / `Error` error handling | `src/common/error.*` | `Result.*`, `Error.*` |
-| Thread-safe logging: levels, custom sink, file output, timestamps | `src/common/log.*` | `LogTest.*` |
-| File helpers with size limits and UTF-8 paths | `src/common/fileio.*` | `FileIo.*` |
-| Honest module status reporting | `src/*/…_module.*`, `src/core/emulator.*` | `Modules.*`, `Emulator.*` |
-| Command-line parsing with input validation | `src/app/command_line.*` | `CommandLine.*` |
-| Entry point: SDL window (RAII), event loop, Esc to quit, controller hot-plug logging, top-level exception handler | `src/app/main.cpp`, `src/app/sdl_window.*` | `app.*` smoke tests |
+| Separate libraries: common, cpu, gpu, audio, memory, disc, controller, core, cli | `core/CMakeLists.txt`, `desktop/CMakeLists.txt` | build |
+| `Result<T>` / `Error` error handling | `core/common/error.*` | `Result.*`, `Error.*` |
+| Thread-safe logging: levels, custom sink, file output, timestamps | `core/common/log.*` | `LogTest.*` |
+| File helpers with size limits and UTF-8 paths | `core/common/fileio.*` | `FileIo.*` |
+| Honest module status reporting | `core/*/…_module.*`, `core/system/emulator.*` | `Modules.*`, `Emulator.*` |
+| Command-line parsing with input validation | `desktop/src/command_line.*` | `CommandLine.*` |
+| Entry point: SDL window (RAII), event loop, Esc to quit, controller hot-plug logging, top-level exception handler | `desktop/src/main.cpp`, `desktop/src/sdl_window.*` | `app.*` smoke tests |
 
 ### Not implemented at the end of Step 1 (historical; see Step 2 above for the current state)
 
