@@ -16,26 +16,39 @@ desktop app and an **Android** app.
 Download the version for your device: the Windows file does not run on
 Android, and the Android file does not run on Windows.
 
-| Platform | Download | Version | Requirements |
-|----------|----------|---------|--------------|
-| **Windows** | Not published yet: see [Releases](https://github.com/102rupeshsharma/NovaCast/releases) | 0.1.0 pre-alpha | Windows 10 or 11, 64-bit |
-| **Android** | Not published yet: see [Releases](https://github.com/102rupeshsharma/NovaCast/releases) | 0.1.0 pre-alpha | Android 8.0 or newer, 64-bit ARM (arm64-v8a) or x86_64 |
+### Windows
 
-Direct download links will appear here once the first release has been
-published. Every release lists SHA-256 checksums so you can verify your
-download.
+**[⬇ Download NovaCast for Windows (.exe)](https://github.com/102rupeshsharma/NovaCast/releases/download/v0.1.0/NovaCast-Windows.exe)**: version 0.1.0 pre-alpha, 6 MB
+
+Also available as a [.zip](https://github.com/102rupeshsharma/NovaCast/releases/download/v0.1.0/NovaCast-Windows.zip) ·
+[SHA-256 checksums](https://github.com/102rupeshsharma/NovaCast/releases/download/v0.1.0/SHA256SUMS-windows.txt)
+
+### Android
+
+**[⬇ Download NovaCast for Android (.apk)](https://github.com/102rupeshsharma/NovaCast/releases/download/v0.1.0/NovaCast-Android.apk)**: version 0.1.0 pre-alpha, 3.4 MB
+
+[SHA-256 checksum](https://github.com/102rupeshsharma/NovaCast/releases/download/v0.1.0/SHA256SUMS-android.txt)
+
+| Platform | Version | Requirements |
+|----------|---------|--------------|
+| Windows | 0.1.0 pre-alpha | Windows 10 or 11, 64-bit |
+| Android | 0.1.0 pre-alpha | Android 8.0 or newer, 64-bit ARM (arm64-v8a) or x86_64 |
+
+All versions and release notes: [Releases](https://github.com/102rupeshsharma/NovaCast/releases).
+The Android app has so far been tested on the Android Emulator only, not yet
+on a physical phone.
 
 ### Installing on Windows
 
-1. Download `NovaCast-Windows.exe` (or `NovaCast-Windows.zip` and extract it).
-2. Run `novacast.exe`. No installer or extra DLLs are needed.
+1. Click **Download NovaCast for Windows (.exe)** above (or get the `.zip` and extract it).
+2. Double-click the downloaded `NovaCast-Windows.exe`. No installer or extra DLLs are needed.
 3. Windows SmartScreen may warn about an unrecognised app because the build is
    not code-signed. Choose **More info → Run anyway** only if you downloaded it
    from this repository's Releases page.
 
 ### Installing on Android
 
-1. Download `NovaCast-Android.apk` on your phone or tablet.
+1. On your phone or tablet, tap **Download NovaCast for Android (.apk)** above.
 2. Open it. If Android asks, allow your browser or file manager to
    **install unknown apps** (Settings → Apps → Special app access).
 3. Open NovaCast and select a boot ROM (`dc_boot.bin`) dumped from your own
